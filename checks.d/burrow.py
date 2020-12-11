@@ -1,12 +1,12 @@
 # stdlib
-from urlparse import urljoin
+from urllib.parse import urljoin
 
 # 3rd Party
 import requests
 import json
 
 # project
-from checks import AgentCheck
+from datadog_checks.base import AgentCheck
 
 SERVICE_CHECK_NAME = 'burrow.can_connect'
 
@@ -86,7 +86,7 @@ class BurrowCheck(AgentCheck):
 
         burrow_status[status] = 1
 
-        for metric_name, value in burrow_status.iteritems():
+        for metric_name, value in iter(burrow_status.items()):
             self.gauge("%s.%s" % (metric_namespace, metric_name.lower()), value, tags=tags)
 
     def _submit_partition_lags(self, partition, tags):
@@ -146,7 +146,7 @@ class BurrowCheck(AgentCheck):
                 topics_response = self._rest_request_to_json(burrow_address, topics_path)
 
                 if 'topics' in topics_response:
-                    for topic_name, offsets in topics_response["topics"].iteritems():
+                    for topic_name, offsets in iter(topics_response["topics"].items()):
                         # topic_path = "%s/%s" % (topics_path, topic)
                         # response = self._rest_request_to_json(burrow_address, topic_path)
                         # if not response:
